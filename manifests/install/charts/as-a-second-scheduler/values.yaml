@@ -4,7 +4,7 @@
 
 scheduler:
   name: scheduler-plugins-scheduler
-  image: registry.k8s.io/scheduler-plugins/kube-scheduler:v0.30.6
+  image: 192.168.110.64:5000/kube-scheduler:binpack
   command:
   - /bin/kube-scheduler
   replicaCount: 1
@@ -18,7 +18,7 @@ scheduler:
 controller:
   name: scheduler-plugins-controller
   image: registry.k8s.io/scheduler-plugins/controller:v0.30.6
-  replicaCount: 1
+  replicaCount: 0
   leaderElect: false
   priorityClassName: ""
   resources: {}
@@ -30,7 +30,7 @@ controller:
 # as they need extra RBAC privileges on metrics.k8s.io.
 
 plugins:
-  enabled: ["Coscheduling","CapacityScheduling","NodeResourceTopologyMatch","NodeResourcesAllocatable"]
+  enabled: ["Binpack","Coscheduling","CapacityScheduling","NodeResourceTopologyMatch","NodeResourcesAllocatable"]
   disabled: ["PrioritySort"] # only in-tree plugins need to be defined here
 
 # Customize the enabled plugins' config.
