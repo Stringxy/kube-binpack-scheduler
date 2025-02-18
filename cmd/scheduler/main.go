@@ -23,6 +23,7 @@ import (
 	_ "k8s.io/component-base/metrics/prometheus/clientgo" // for rest client metric registration
 	_ "k8s.io/component-base/metrics/prometheus/version"  // for version metric registration
 	"k8s.io/kubernetes/cmd/kube-scheduler/app"
+	"sigs.k8s.io/scheduler-plugins/pkg/binpack"
 	"sigs.k8s.io/scheduler-plugins/pkg/capacityscheduling"
 	"sigs.k8s.io/scheduler-plugins/pkg/coscheduling"
 	"sigs.k8s.io/scheduler-plugins/pkg/networkaware/networkoverhead"

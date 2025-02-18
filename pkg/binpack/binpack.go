@@ -1,4 +1,4 @@
-package priority
+package binpack
 
 import (
 	"context"
@@ -84,12 +84,14 @@ func (binpack *Binpack) ScoreExtensions() framework.ScoreExtensions {
 func BinPackingScore(pod *v1.Pod, nodeInfo *framework.NodeInfo, weight priorityWeight, logger klog.Logger) (int64, *framework.Status) {
 	score := int64(0)
 	cpuRequest := calculatePodResourceRequest(pod, corev1.ResourceCPU)
+	cpuUsed := nodeInfo.Requested.MilliCPU
 	cpuAllo := nodeInfo.Allocatable.MilliCPU
 	memRequest := calculatePodResourceRequest(pod, corev1.ResourceMemory)
+	memUsed := nodeInfo.Requested.Memory
 	memAllo := nodeInfo.Allocatable.Memory
 
 	if cpuRequest > 0 {
-		resourceScore, err := ResourceBinPackingScore(cpuRequest, cpuAllo, weight.BinPackingCPU)
+		resourceScore, err := ResourceBinPackingScore(cpuRequest, cpuAllo, cpuUsed, weight.BinPackingCPU)
 
 		if err != nil {
 			return 0, framework.NewStatus(framework.Error, fmt.Sprintf("pod %s/%s cannot binpack node %s: cpuRequest is %s, need %f, allocatable %f",
@@ -103,7 +105,7 @@ func BinPackingScore(pod *v1.Pod, nodeInfo *framework.NodeInfo, weight priorityW
 	}
 
 	if memRequest > 0 {
-		resourceScore, err := ResourceBinPackingScore(memRequest, memAllo, weight.BinPackingMemory)
+		resourceScore, err := ResourceBinPackingScore(memRequest, memAllo, memUsed, weight.BinPackingMemory)
 
 		if err != nil {
 			return 0, framework.NewStatus(framework.Error, fmt.Sprintf("pod %s/%s cannot binpack node %s: memRequest is %s, need %f, allocatable %f",
@@ -148,15 +150,15 @@ func calculatePodResourceRequest(pod *v1.Pod, resource v1.ResourceName) int64 {
 }
 
 // ResourceBinPackingScore calculate the binpack score for resource with provided info
-func ResourceBinPackingScore(requested, capacity, weight int64) (int64, error) {
+func ResourceBinPackingScore(requested, capacity, used, weight int64) (int64, error) {
 	if capacity == 0 || weight == 0 {
 		return 0, nil
 	}
 	if requested > capacity {
 		return 0, fmt.Errorf("not enough")
 	}
-
-	score := requested * weight / capacity
+	usedFinally := requested + used
+	score := usedFinally * weight / capacity
 	return score, nil
 }
 
