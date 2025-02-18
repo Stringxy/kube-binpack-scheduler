@@ -48,7 +48,7 @@ func addKnownTypes(scheme *runtime.Scheme) error {
 		&NetworkOverheadArgs{},
 		&SySchedArgs{},
 		&PeaksArgs{},
-		&BinPackArgs{}
+		&BinPackArgs{},
 	)
 	return nil
 }
