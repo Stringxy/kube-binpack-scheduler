@@ -298,6 +298,8 @@ type PowerModel struct {
 	// Idle power of node will be K0 + K1
 }
 
+// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+// BinPackArgs holds arguments used to configure the BinPack plugin
 type BinPackArgs struct {
 	metav1.TypeMeta `json:",inline"`
 
